@@ -21,7 +21,7 @@ const DiscoverCard = (props: DiscoverCardInterface) => {
           <div>
             <h2 className="text-xl font-bold mb-2">{props.title}</h2>
             <p className="text-gray-400 mb-4">{props.description}</p>
-            <div className="flex justify-between text-gray-500 text-sm">
+            <div className="flex flex-row items-center space-x-2 text-gray-500 text-sm">
               <span>{props.views} views</span>
               <span>{props.likes} likes</span>
             </div>
@@ -37,7 +37,7 @@ const DiscoverCard = (props: DiscoverCardInterface) => {
               <h2 className="text-xl font-bold mb-2">{props.title}</h2>
               <p className="text-gray-400 mb-4">{props.description}</p>
             </div>
-            <div className="flex justify-between text-gray-500 text-sm">
+            <div className="flex flex-row items-center space-x-2 text-gray-500 text-sm">
               <span>{props.views} views</span>
               <span>{props.likes} likes</span>
             </div>

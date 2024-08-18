@@ -1,10 +1,14 @@
 import express from 'express';
+import authGuard from '../utils/authGuard';
 import imagesRouter from './images';
 import videosRouter from './videos';
 import configRouter from './config';
 import modelsRouter from './models';
 import suggestionsRouter from './suggestions';
 import chatsRouter from './chats';
+import authRouter from './auth';
+import articleRouter from './article';
+import publicRouter from './public';
 
 const router = express.Router();
 
@@ -14,5 +18,8 @@ router.use('/config', configRouter);
 router.use('/models', modelsRouter);
 router.use('/suggestions', suggestionsRouter);
 router.use('/chats', chatsRouter);
+router.use('/auth', authRouter);
+router.use('/article', authGuard, articleRouter);
+router.use('/public', publicRouter);
 
 export default router;

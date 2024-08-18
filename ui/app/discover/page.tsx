@@ -4,22 +4,15 @@ import DiscoverCard from '@/components/DiscoverCard';
 import { Compass } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export interface Chat {
-  id: string;
-  title: string;
-  createdAt: string;
-  focusMode: string;
-}
-
 const Page = () => {
-  const [chats, setChats] = useState<Chat[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchChats = async () => {
+    const fetData = async () => {
       setLoading(true);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chats`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/article`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -28,43 +21,12 @@ const Page = () => {
 
       const data = await res.json();
 
-      setChats(data.chats);
+      setData(data.data);
       setLoading(false);
     };
 
-    fetchChats();
+    fetData();
   }, []);
-
-  const cards = [
-    {
-      title: 'The history of Diwali',
-      description: 'Diwali, also known as Deepavali, is a significant festival in Hinduism, Jainism, Sikhism, and Buddhism...',
-      imageUrl: 'https://images.unsplash.com/photo-1722486110900-cfb036cf1830?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      views: 1136,
-      likes: 114,
-    },
-    {
-      title: 'What is tipflation?',
-      description: 'Tipflation, also referred to as tip creep, describes the recent widespread expansion of tipping...',
-      imageUrl: 'https://images.unsplash.com/photo-1722486110900-cfb036cf1830?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      views: 158,
-      likes: 29,
-    },
-    {
-      title: 'Why do we perceive smaller numbers better?',
-      description: 'The human brain perceives smaller numbers better due to a combination...',
-      imageUrl: 'https://images.unsplash.com/photo-1722486110900-cfb036cf1830?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      views: 128,
-      likes: 20,
-    },
-    {
-      title: 'Iceland volcano eruption',
-      description: 'The town of Grindavik, located on the...',
-      imageUrl: 'https://images.unsplash.com/photo-1722486110900-cfb036cf1830?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      views: 250,
-      likes: 55,
-    },
-  ];
 
   return loading ? (
     <div className="flex flex-row items-center justify-center min-h-screen">
@@ -95,30 +57,32 @@ const Page = () => {
           </h2>
         </div>
       </div>
-      {chats.length === 0 && (
+      {data.length === 0 && (
         <div className="flex flex-row items-center justify-center min-h-screen">
           <p className="text-black/70 dark:text-white/70 text-sm">
-            No chats found.
+            No data found.
           </p>
         </div>
       )}
-      {chats.length > 0 && (
-        <div className="flex flex-col pt-16 lg:pt-24 bg-gray-800">
-          <div className="container mx-auto p-4">
-          {cards.map((card, index) => (
-            <DiscoverCard
-              key={index}
-              title={card.title}
-              description={card.description}
-              imageUrl={card.imageUrl}
-              views={card.views}
-              likes={card.likes}
-              isFirst={index === 0 ? true : false}
-            />
-          ))}
-        </div>
-        </div>
-      )}
+      <div className='flex flex-col pt-16 lg:pt-24'>
+        {data.length > 0 && (
+          <div className="flex flex-col bg-gray-800">
+            <div className="container mx-auto p-4">
+              {data.map((item, index) => (
+                <DiscoverCard
+                  key={index}
+                  title={item.title}
+                  description={item.summary}
+                  imageUrl={'https://images.unsplash.com/photo-1722486110900-cfb036cf1830?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                  views={item.viewsCount}
+                  likes={item.likesCount}
+                  isFirst={index === 0 ? true : false}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

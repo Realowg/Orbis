@@ -1,12 +1,15 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { BookOpenText, Home, Search, SquarePen, Settings, Compass } from 'lucide-react';
+import { BookOpenText, Home, Search, SquarePen, Settings, Compass, GalleryHorizontalEnd, LockKeyhole, User2Icon, CircleUserRound, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
-import React, { useState, type ReactNode } from 'react';
+import React, { useEffect, useState, type ReactNode } from 'react';
 import Layout from './Layout';
 import SettingsDialog from './SettingsDialog';
+import LoginDialog from './LoginDialog';
+import RegisterDialog from './RegisterDialog';
+import showNotification from '@/lib/toast';
 
 const VerticalIconContainer = ({ children }: { children: ReactNode }) => {
   return (
@@ -17,7 +20,10 @@ const VerticalIconContainer = ({ children }: { children: ReactNode }) => {
 const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const segments = useSelectedLayoutSegments();
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [ isLoginOpen, setIsLoginOpen ] = useState(false);
+  const [ isRegisterOpen, setIsRegisterOpen ] = useState(false);
+  const [ isLogged, setIsLogged ] = useState(false);
 
   const navLinks = [
     {
@@ -25,20 +31,53 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
       href: '/',
       active: segments.length === 0 || segments.includes('c'),
       label: 'Home',
+      isAuth: false
     },
     {
       icon: Compass,
       href: '/discover',
       active: segments.includes('discover'),
       label: 'Discover',
+      isAuth: false
     },
     {
       icon: BookOpenText,
       href: '/library',
       active: segments.includes('library'),
       label: 'Library',
+      isAuth: false
+    },
+    {
+      icon: GalleryHorizontalEnd,
+      href: '/article',
+      active: segments.includes('article'),
+      label: 'Article',
+      isAuth: true
     },
   ];
+
+  const logged = async () => {
+    if (localStorage.getItem('token')) {
+      setIsLogged(true)
+    }
+  }
+
+  const logout = async () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('name');
+    document.cookie = 'token=; path=/; max-age=0';
+    setIsLogged(false)
+    showNotification({
+      type: 'success',
+      message: "Logout successfully.",
+      // description: 'You have successfully logged in.',
+    });
+    window.location.href = '/';
+  }
+
+  useEffect(() => {
+    logged()
+  }, [isLogged]);
 
   return (
     <div>
@@ -48,34 +87,59 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             <SquarePen className="cursor-pointer" />
           </a>
           <VerticalIconContainer>
-            {navLinks.map((link, i) => (
-              <Link
-                key={i}
-                href={link.href}
-                className={cn(
-                  'relative flex flex-row items-center justify-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 duration-150 transition w-full py-2 rounded-lg',
-                  link.active
-                    ? 'text-black dark:text-white'
-                    : 'text-black/70 dark:text-white/70',
-                )}
-              >
-                <link.icon />
-                {link.active && (
-                  <div className="absolute right-0 -mr-2 h-full w-1 rounded-l-lg bg-black dark:bg-white" />
-                )}
-              </Link>
-            ))}
+            {navLinks.map((link, i) => {
+              return (
+                <Link
+                  key={i}
+                  href={link.href}
+                  className={cn(
+                    `${!isLogged && link.isAuth ? 'hidden' : 'flex'} relative flex-row items-center justify-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 duration-150 transition w-full py-2 rounded-lg`,
+                    link.active
+                      ? 'text-black dark:text-white'
+                      : 'text-black/70 dark:text-white/70',
+                  )}
+                >
+                  <link.icon />
+                  {link.active && (
+                    <div className="absolute right-0 -mr-2 h-full w-1 rounded-l-lg bg-black dark:bg-white" />
+                  )}
+                </Link>
+              )
+            })}
           </VerticalIconContainer>
 
-          <Settings
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className="cursor-pointer"
+          {isLogged ? (
+            <LogOut
+              onClick={() => logout()}
+              className="cursor-pointer"
+            />
+          ) : (
+            <LockKeyhole
+              onClick={() => setIsLoginOpen(!isLoginOpen)}
+              className="cursor-pointer"
+            />
+          )}
+
+          <LoginDialog
+            isOpen={isLoginOpen}
+            setIsOpen={setIsLoginOpen}
+            isRegister={isRegisterOpen}
+            setIsRegisterOpen={setIsRegisterOpen}
+            isLogged={isLogged}
+            setIsLogged={setIsLogged}
           />
 
-          <SettingsDialog
+          <RegisterDialog
+            isOpen={isLoginOpen}
+            setIsOpen={setIsLoginOpen}
+            isRegister={isRegisterOpen}
+            setIsRegisterOpen={setIsRegisterOpen}
+          />
+
+          {/* <SettingsDialog
             isOpen={isSettingsOpen}
             setIsOpen={setIsSettingsOpen}
-          />
+          /> */}
         </div>
       </div>
 
