@@ -1,9 +1,8 @@
 'use client';
 
 import DeleteArticle from '@/components/DeleteArticle';
-import DeleteChat from '@/components/DeleteChat';
 import { formatTimeDifference } from '@/lib/utils';
-import { BookOpenText, ClockIcon, Delete, GalleryHorizontalEnd, GalleryVerticalEnd, Layers3, PlusCircle, PlusSquare, ScanEye } from 'lucide-react';
+import { ClockIcon, GalleryHorizontalEnd, PlusSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -30,25 +29,24 @@ const Page = () => {
   const [data, setData] = useState<dataInterface[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchData = async () => {
+    setLoading(true);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/article`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+    });
+    const data = await res.json();
+    setData(data.data);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/article`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
-
-      const data = await res.json();
-
-      setData(data.data);
-      setLoading(false);
-    };
-
-    fetchData();
+    if (data.length === 0) {
+      fetchData();
+    }
   }, []);
 
   return loading ? (
@@ -107,7 +105,7 @@ const Page = () => {
           </p>
         </div>
       )}
-      {data.length > 0 && (
+      {data && (
         <div className="flex flex-col pt-8 lg:pt-12">
           {data.map((item, i) => (
             <div

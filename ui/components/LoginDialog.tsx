@@ -64,9 +64,8 @@ const LoginDialog = ({
 }) => {
   const [ isLoading, setIsLoading ] = useState(false);
   const [ isUpdating, setIsUpdating ] = useState(false);
-  const [ username, setUsername ] = useState();
-  const [ password, setPassword ] = useState();
-  const [ error, setError ] = useState('');
+  const [ username, setUsername ] = useState('');
+  const [ password, setPassword ] = useState('');
 
   useEffect(() => {
   }, [isOpen]);
@@ -90,7 +89,6 @@ const LoginDialog = ({
       document.cookie = `token=${data.token}; path=/; max-age=3600; Secure; HttpOnly`;
       localStorage.setItem('token', data.token);
       localStorage.setItem('name', JSON.stringify(data.user.name));
-      setError('')
 
       showNotification({
         type: 'success',
@@ -98,10 +96,16 @@ const LoginDialog = ({
         // description: 'You have successfully logged in.',
       });
       
+      setUsername('')
+      setPassword('')
       setIsOpen(false)
       setIsLogged(true)
     } else {
-      setError(data.message)
+      showNotification({
+        type: 'warning',
+        message: data.message,
+      });
+      setPassword('')
     }
 
     setIsUpdating(false)
@@ -174,9 +178,6 @@ const LoginDialog = ({
                   </div>
                 )}
                 <div className="w-full mt-6 space-y-2">
-                  {error && (
-                    <p className="text-xs" style={{ color: 'red' }}>{error}</p>  
-                  )}
                   <p className="text-xs text-black/50 dark:text-white/50">
                     Don&apos;t have an account yet? you can <a href="#" className='text-white' onClick={() => {
                       setIsOpen(false)

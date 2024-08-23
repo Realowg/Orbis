@@ -45,7 +45,6 @@ router.get('/', async (req:any, res) => {
     await connectMongoDB();
 
     const data = await Article.find({ authorId: req.user.id });
-
     data.reverse()
   
     const newData = data.map(item => {
